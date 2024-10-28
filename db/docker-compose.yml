@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  interlock-postgres:
+    container_name: interlock-postgres
+    image: postgres:14.13
+    env_file:
+      - ./.env
+    volumes:
+      - ./dump:/data/dump
+      - postgres:/data/postgres:rw
+      - postgresconfig:/var/lib/postgresql/data:rw
+    ports:
+      - 5439:5432
+    hostname: interlock-postgres
+    networks:
+      - interlock-network
+    restart: unless-stopped
+
+  interlock-pgadmin:
+    container_name: interlock-pgadmin
+    image: dpage/pgadmin4
+    env_file:
+      - ./.env
+    depends_on:
+      - interlock-postgres
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5040:80
+    networks:
+      - interlock-network
+    hostname: interlock-pgadmin
+    restart: unless-stopped
+
+networks:
+  interlock-network:
+    driver: bridge
+    external: true
+
+volumes:
+  postgres:
+  pgadmin:
+  postgresconfig:

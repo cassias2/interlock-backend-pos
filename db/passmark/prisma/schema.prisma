@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ram_details {
+  id                    Int     @id @default(autoincrement())
+  session_id            Int     @unique @db.Integer
+  name                  String? @db.VarChar(32)
+  manufacturer          String? @db.VarChar(64)
+  model                 String? @db.VarChar(64)
+  serial                String? @db.VarChar(64)
+  size                  String? @db.VarChar(16)
+  date                  String? @db.VarChar(32)
+  manufacturer_specific String? @db.VarChar(64)
+  profiles              String? @db.VarChar(255)
+}
+
+model memtest_reports {
+  result_id      Int     @id @default(autoincrement())
+  session_id     Int     @unique @db.Integer
+  memory_range   String? @db.VarChar(45)
+  cpu_selection  String? @db.VarChar(40)
+  cpu_temp       String? @db.VarChar(20)
+  ram_temp       String? @db.VarChar(20)
+  tests_passed   String? @db.VarChar(20)
+  erroraddr_low  String? @db.VarChar(45)
+  erroraddr_high String? @db.VarChar(45)
+  error_bitmask  String? @db.VarChar(20)
+  error_numbits  String? @db.VarChar(20)
+  errors_maxcont String? @db.VarChar(20)
+  err_cpus       String? @db.VarChar(100)
+}
+
+model memtest_results {
+  result_id  Int       @id @default(autoincrement())
+  session_id Int       @unique @db.Integer
+  timestart  DateTime  @unique @db.Timestamp
+  timeupdate DateTime? @db.Timestamp
+  timestop   DateTime? @db.Timestamp
+  duration   Int?      @db.Integer
+  result     String?   @db.VarChar(16)
+}

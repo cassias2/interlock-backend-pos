@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  interlock-backend:
+    build:
+      dockerfile: ./Dockerfile
+    image: interlock-backend
+    container_name: interlock-backend
+    restart: unless-stopped
+    networks:
+      - interlock-network
+    env_file: ./.env
+    hostname: interlock-backend
+    ports:
+      - 3031:${INTERLOCK_PORT}
+
+networks:
+  interlock-network:
+    external: true
+    driver: bridge

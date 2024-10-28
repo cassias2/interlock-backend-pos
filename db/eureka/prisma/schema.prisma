@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model close_lote {
+  id        Int      @id(map: "close_lote_pk") @default(autoincrement())
+  lote      String?  @db.VarChar
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  userId    Int?
+  admUserId Int?
+  user      user?    @relation(fields: [admUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "close_lote_user_fk")
+}
+
+model eureka {
+  id             Int       @id @default(autoincrement())
+  lote           String    @db.VarChar(25)
+  sn_he          String    @unique @db.VarChar(25)
+  sn_cust        String?   @unique @db.VarChar(1000)
+  sn_rdimm       String?   @unique @db.VarChar(25)
+  ppid           String?   @unique @db.VarChar(25)
+  date_spd_write DateTime? @db.Timestamp(6)
+  date_et        DateTime? @db.Timestamp(6)
+  status         String?   @db.VarChar(10)
+  spd_retest     String?   @db.VarChar(10)
+  et_retest      String?   @db.VarChar(10)
+  operator       String?   @db.VarChar(35)
+}
+
+model interlock {
+  id                             Int      @default(autoincrement())
+  lote                           String   @db.VarChar
+  part_number                    String?  @db.VarChar
+  sn_he                          String   @unique(map: "interlock_unique") @db.VarChar
+  result                         String?  @db.VarChar
+  status                         String?  @db.VarChar
+  createdAt                      DateTime @default(now()) @db.Timestamp(6)
+  updatedAt                      DateTime @default(now()) @db.Timestamp(6)
+  userId                         Int?
+  admUserId                      Int?
+  user_interlock_userIdTouser    user?    @relation("interlock_userIdTouser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_0147784aef401974bbbe896e41c")
+  user_interlock_admUserIdTouser user?    @relation("interlock_admUserIdTouser", fields: [admUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "interlock_user_fk")
+
+  @@id([id, lote, sn_he], map: "PK_53ef6c63a735bbb3a1c757722dd")
+}
+
+model user {
+  id                                  Int          @id(map: "PK_cace4a159ff9f2512dd42373760") @default(autoincrement())
+  name                                String?      @db.VarChar
+  password                            String?      @db.VarChar
+  role                                String?      @db.VarChar
+  matricula                           String       @db.VarChar
+  close_lote                          close_lote[]
+  interlock_interlock_userIdTouser    interlock[]  @relation("interlock_userIdTouser")
+  interlock_interlock_admUserIdTouser interlock[]  @relation("interlock_admUserIdTouser")
+}
